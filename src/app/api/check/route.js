@@ -10,7 +10,7 @@ const hf = new HfInference(process.env.HF_KEY)
 console.log(process.env.HF_KEY)
 const checkAnswer = async (sampleAnswer, answer, _id) => {
 
-    const result = await hf.sentenceSimilarity({
+    const marks = await hf.sentenceSimilarity({
         model: 'sentence-transformers/paraphrase-xlm-r-multilingual-v1',
         inputs: {
             source_sentence: sampleAnswer,
@@ -23,7 +23,7 @@ const checkAnswer = async (sampleAnswer, answer, _id) => {
         sampleAnswer,
         answer,
         id: _id,
-        result
+        marks
     }
 }
 
@@ -37,16 +37,16 @@ export async function POST(req) {
     // console.log(subm.assigmentsId)
     // console.log("❤️❤️", questionFromSubm)
     // console.log("🟢🟢", questionsArray)
-    questionFromSubm.forEach(async ({ _id, answer }) => {
-        const subAns = answer
-        console.log(questionsArray)
-        const mainQuestion = questionsArray.find(item => JSON.stringify(item._id) == JSON.stringify(_id))
-        // console.log(mainQuestion.answer, subAns)
-        const result = await checkAnswer(mainQuestion.answer, subAns, _id)
-        console.log(result)
-    });
     try {
-
+        questionFromSubm.forEach(async ({ _id, answer }) => {
+            const subAns = answer
+            console.log(questionsArray)
+            const mainQuestion = questionsArray.find(item => JSON.stringify(item._id) == JSON.stringify(_id))
+            // console.log(mainQuestion.answer, subAns)
+            const result = await checkAnswer(mainQuestion.answer, subAns, _id)
+            const updatedSubmisson = await submisions.findByIdAndUpdate(body.id, { questions: { marks: result.marks * 10, answer: result.answer, _id } })
+            console.log(result)
+        });
         return NextResponse.json({ message: "success" }, { status: 200 });
     } catch (error) {
         // If an error occurs, respond with an error message

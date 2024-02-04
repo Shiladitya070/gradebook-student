@@ -28,9 +28,9 @@ function Page() {
     return (
         <div>
             <h1>Your Submission</h1>
-            {data.map(({ _id }) => (
+            {data.map(({ _id, name }) => (
                 <div>
-                    <Link className='border-b bg-red-400 p-2' href={`/check/${_id}`}>{_id}</Link>
+                    <Link className='border-b bg-red-400 p-2' href={`/check/${_id}`}>{name}</Link>
                 </div>
             ))}
         </div>
